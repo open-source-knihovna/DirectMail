@@ -1,0 +1,70 @@
+[% INCLUDE 'doc-head-open.inc' %]
+ <title>Koha: Přímé oslovování čtenářů: Konfigurace</title>
+[% INCLUDE 'doc-head-close.inc' %]
+ <link href="[% PLUGIN_PATH %]/css/direct-mail.css" rel="stylesheet" type="text/css" />
+ <script type="text/javascript">
+//<![CDATA[
+
+        $(document).ready(function() {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+//]]>
+</script>
+
+</head>
+<body>
+[% INCLUDE 'header.inc' %]
+<div id="breadcrumbs">
+    <a href="/cgi-bin/koha/mainpage.pl">Koha</a> &rsaquo;
+    <a href="/cgi-bin/koha/tools/tools-home.pl">Nástroje</a> &rsaquo;
+    <a href="/cgi-bin/koha/plugins/plugins-home.pl">Zásuvné moduly</a> &rsaquo;
+    <a href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::SmartWithdrawals&amp;method=tool">Přímé oslovování čtenářů</a> &rsaquo;
+    Konfigurace
+</div>
+
+<div id="doc3" class="rbit-plugin">
+    <div class="logo-links">
+        <a href="https://www.koha.cz" target="_blank"><img src="[% PLUGIN_PATH %]/koha_cz.png" /></a>
+        <a href="https://www.koha-v-knihovne.cz" target="_blank"><img src="[% PLUGIN_PATH %]/logo.png" /></a>
+        <a href="https://www.mkcr.cz" target="_blank"><img src="[% PLUGIN_PATH %]/logo_mkcr.png" /></a>
+    </div>
+
+    <h3>Přímé oslovování čtenářů: Konfigurace</h3>
+
+    [% IF !extended_attr %]
+        Není aktivní <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=ExtendedPatronAttributes">ExtendedPatronAttributes</a>!
+    [% ELSE %]
+    <!-- Notice our form here has no 'action', this is good, it means that our forms will always get passed back to 'plugins/run.pl'. -->
+    <form method="get">
+        <!-- Always pass these two parameters so the plugin system knows what to execute! -->
+        <input type="hidden" name="class" value="[% CLASS %]"/>
+        <input type="hidden" name="method" value="[% METHOD %]"/>
+
+        <fieldset class="rows">
+        <legend>Souhlas se zasíláním</legend>
+        <ol>
+            <li>
+                <label class="form-field-label" for="extattr_agree">Vyjádření souhlasu čtenáře</label>
+                <select name="extattr_agree">
+                    [% FOREACH class IN available_attribute_types %]
+                        [% FOREACH attr IN class.items %]
+                            [% NEXT IF (attr.authorised_value_category != 'YES_NO') %]
+                            [% selected = (attr.code == extattr_agree ? ' selected="selected"' : '') %]
+                            <option value="[% attr.code %]"[% selected %]>[% attr.description %] ([% attr.code %])</option>
+                        [% END %]
+                    [% END %]
+                </select>
+                <i class="fa fa-lg fa-question-circle" data-toggle="tooltip" title="V tomto seznamu jsou uvedeny všechny další vlastnosti čtenářů, které využívají oveřenou hodnotu YES_NO"></i>
+                Přejít na <a href="/cgi-bin/koha/admin/patron-attr-types.pl" target="_blank">Další vlastnosti čtenářů</a>
+            </li>
+        </ol>
+        </fieldset>
+
+        <p>
+            <input type="hidden" name="save" value="1" />
+            <input type="submit" value="Uložit nastavení" />
+        </p>
+
+    </form>
+    [% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

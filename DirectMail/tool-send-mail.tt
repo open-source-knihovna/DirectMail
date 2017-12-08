@@ -1,0 +1,44 @@
+[% INCLUDE 'doc-head-open.inc' %]
+ <title>Koha: Přímé oslovování čtenářů: Odeslání zprávy</title>
+[% INCLUDE 'doc-head-close.inc' %]
+ <link href="[% PLUGIN_PATH %]/css/direct-mail.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+[% INCLUDE 'header.inc' %]
+<div id="breadcrumbs">
+    <a href="/cgi-bin/koha/mainpage.pl">Koha</a> &rsaquo;
+    <a href="/cgi-bin/koha/tools/tools-home.pl">Nástroje</a> &rsaquo;
+    <a href="/cgi-bin/koha/plugins/plugins-home.pl">Zásuvné moduly</a> &rsaquo;
+    <a href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&amp;method=tool">Přímé oslovování čtenářů</a> &rsaquo;
+    Odeslání zprávy
+</div>
+
+<div id="doc3" class="rbit-plugin">
+    <div class="logo-links">
+        <a href="https://www.koha.cz" target="_blank"><img src="[% PLUGIN_PATH %]/koha_cz.png" /></a>
+        <a href="https://www.koha-v-knihovne.cz" target="_blank"><img src="[% PLUGIN_PATH %]/logo.png" /></a>
+        <a href="https://www.mkcr.cz" target="_blank"><img src="[% PLUGIN_PATH %]/logo_mkcr.png" /></a>
+    </div>
+
+    <div id="toolbar" class="btn-toolbar">
+            <div class="btn-group">
+                <a class="btn btn-default btn-sm" href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&amp;method=tool">
+                    <i class="fa fa-list"></i> Zobrazit předvolby
+                </a>
+            </div>
+    </div>
+
+    <h3>Přímé oslovování čtenářů: Odeslání zprávy</h3>
+
+    <div class="dialog message">
+    [% IF (status == 'ok') %]
+            <h4>Zpráva byla odeslána celkem [% sent_letters %] příjemcům.</h4>
+            <a href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&method=tool">Zobrazit seznam uložených předvoleb</a>
+    [% ELSE %]
+            <h4>Nebyly odeslány žádné zprávy.</h4>
+            <a href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&method=tool">Zobrazit seznam uložených předvoleb</a>
+    [% END %]
+    </div>
+</div>
+
+[% INCLUDE 'intranet-bottom.inc' %]

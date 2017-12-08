@@ -1,0 +1,424 @@
+[% INCLUDE 'doc-head-open.inc' %]
+ <title>Koha: Přímé oslovování čtenářů: Parametry vyhledávání</title>
+[% INCLUDE 'doc-head-close.inc' %]
+ <link href="[% PLUGIN_PATH %]/css/direct-mail.css" rel="stylesheet" type="text/css" />
+ <script type="text/javascript">
+//<![CDATA[
+
+        $(document).ready(function() {
+            $('#configtabs').tabs();
+            $('.on-off').click(function() {
+                $(this).parent().css('background-color', $(this).attr('checked') ? '#e6f0f2' : 'transparent');
+            });
+            $('.on-off').each(function(index) {
+                $(this).parent().css('background-color', $(this).attr('checked') ? '#e6f0f2' : 'transparent');
+            });
+
+            $('#reserves_period_type, #issues_period_type, #bbox_period_type, #issue_length_period_type, #prolongs_period_type, #fines_period_type, #services_count_period_type').change(function(){
+                if ($(this).val() == 'year' || $(this).val() == 'month') {
+                    $(this).prev().show();
+                    $(this).prev().prev().children('span').show();
+                }
+                else {
+                    $(this).prev().hide();
+                    $(this).prev().prev().children('span').hide();
+                }
+            });
+            $('#reserves_period_type, #issues_period_type, #bbox_period_type, #issue_length_period_type, #prolongs_period_type, #fines_period_type, #services_count_period_type').each(function(index) {
+                if ($(this).val() == 'this-year' || $(this).val() == 'last-reg') {
+                    $(this).prev().hide();
+                    $(this).prev().prev().children('span').hide();
+                }
+            });
+
+            $( "#genre_form" ).autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: "/cgi-bin/koha/authorities/ysearch.pl",
+                        dataType: "json",
+                        data: {
+                            authtypecode : "GENRE/FORM",
+                            term: request.term,
+                            op: "do_search",
+                            type: "intranet",
+                            and_or: "and",
+                            operator: "contains",
+                            orderby: "HeadingAsc",
+                            querytype: "mainmainentry"
+                        },
+                        success: function(data) {
+                            response( $.map( data, function( item ) {
+                                    return {
+                                        label: item.summary,
+                                        value: item.summary
+                                    }
+                                }));
+                        }
+                    });
+                },
+                minLength: 3,
+            });
+
+            $( "#author" ).autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: "/cgi-bin/koha/authorities/ysearch.pl",
+                        dataType: "json",
+                        data: {
+                            authtypecode : "PERSO_NAME",
+                            term: request.term,
+                            op: "do_search",
+                            type: "intranet",
+                            and_or: "and",
+                            operator: "contains",
+                            orderby: "HeadingAsc",
+                            querytype: "mainmainentry"
+                        },
+                        success: function(data) {
+                            response( $.map( data, function( item ) {
+                                    return {
+                                        label: item.summary,
+                                        value: item.summary
+                                    }
+                                }));
+                        }
+                    });
+                },
+                minLength: 3,
+            });
+
+        });
+//]]>
+</script>
+
+</head>
+<body>
+[% INCLUDE 'header.inc' %]
+<div id="breadcrumbs">
+    <a href="/cgi-bin/koha/mainpage.pl">Koha</a> &rsaquo;
+    <a href="/cgi-bin/koha/tools/tools-home.pl">Nástroje</a> &rsaquo;
+    <a href="/cgi-bin/koha/plugins/plugins-home.pl">Zásuvné moduly</a> &rsaquo;
+    <a href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&amp;method=tool">Přímé oslovování čtenářů</a> &rsaquo;
+    Parametry vyhledávání
+</div>
+
+<div id="doc3" class="rbit-plugin">
+    <div class="logo-links">
+        <a href="https://www.koha.cz" target="_blank"><img src="[% PLUGIN_PATH %]/koha_cz.png" /></a>
+        <a href="https://www.koha-v-knihovne.cz" target="_blank"><img src="[% PLUGIN_PATH %]/logo.png" /></a>
+        <a href="https://www.mkcr.cz" target="_blank"><img src="[% PLUGIN_PATH %]/logo_mkcr.png" /></a>
+    </div>
+
+    <h3>Přímé oslovování čtenářů: Parametry vyhledávání</h3>
+
+    <!-- Notice our form here has no 'action', this is good, it means that our forms will always get passed back to 'plugins/run.pl'. You could hard code it instead if you prefer -->
+    <form method="post" action="/cgi-bin/koha/plugins/run.pl">
+
+    <div id="toolbar" class="btn-toolbar">
+        <div class="btn-group">
+            <button type="submit" name="save" class="btn btn-default btn-sm"><i class="fa fa-floppy-o"></i> Uložit</button>
+        </div>
+        <div class="btn-group">
+            <button type="submit" name="save_run" class="btn btn-default btn-sm"><i class="fa fa-floppy-o"></i> <i class="fa fa-play"></i> Uložit a provést výběr</button>
+        </div>
+    </div>
+
+    <!-- Always pass these two parameters so the plugin system knows what to execute! -->
+    <input type="hidden" name="class" value="[% CLASS %]"/>
+    <input type="hidden" name="method" value="[% METHOD %]"/>
+
+    <input type="hidden" name="phase" value="run" />
+    [% IF predef %]
+    <input type="hidden" name="predef" value="[% predef.predef_id %]" />
+    [% END %]
+
+
+
+    <div id="configtabs" class="toptabs numbered">
+        <ul>
+        <li><a href="#readers">Filtry: Údaje o čtenářích</a></li>
+        <li><a href="#behavior">Filtry: Chování čtenářů</a></li>
+        <li><a href="#preset">Předvolba</a></li>
+        </ul>
+
+        <div id="preset">
+            <fieldset>
+            <legend>Uložit nastavení</legend>
+                <div class="form-field form-field-select">
+                    <label class="form-field-label" for="predef-name">Název předvolby </label>
+                    <input name="predef-name" type="text" size="60" value="[% predef.name %]" />
+                </div>
+
+                <div class="form-field">
+                    <label class="form-field-label" for="predef-descr">Popis </label>
+                    <textarea name="predef-descr" rows="3" cols="60">[% predef.description %]</textarea>
+                </div>
+            </fieldset>
+
+        </div>
+
+        <div id="readers">
+            <fieldset>
+            <legend>Profil čtenáře</legend>
+                <div class="form-field">
+                    <strong>Použít</strong>
+                </div>
+
+                <div class="form-field">
+                    <input type="checkbox" name="chk_sex" value="1" class="on-off"[% IF options.chk_sex == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="sex">Pohlaví  </label>
+                    <input type="radio" name="sex" value="M"[% !predef || options.sex == 'M' ? ' checked="checked"' : '' %] /> Muž
+                    <input type="radio" name="sex" value="F"[% options.sex == 'F' ? ' checked="checked"' : '' %] /> Žena
+                    <input type="radio" name="sex" value="N"[% options.sex == 'N' ? ' checked="checked"' : '' %] /> Neuvedeno
+                </div>
+
+                <div class="form-field">
+                    <input type="checkbox" name="chk_age" value="1" class="on-off"[% IF options.chk_age == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="age_from">Věk čtenáře </label>
+                    <input type="number" name="age_from" size="5" value="[% options.age_from ? options.age_from : '0' %]" step"1" min="0" max="150" /> až
+                    <input type="number" name="age_to" size="5" value="[% options.age_to ? options.age_to : '15' %]" step"1" min="0" max="150" /> (včetně krajních hodnot)
+                </div>
+
+                <div class="form-field form-field-select">
+                    <input type="checkbox" name="chk_branches" value="1" class="on-off"[% IF options.chk_branches == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="branches">Knihovna </label>
+                    <select name="branches" multiple="multiple">
+                        [% FOREACH val IN branches %]
+                            [% SET selected = 0 %]
+                            [% FOREACH opt IN options.branches %]
+                                [% IF opt == val.branchcode %]
+                                    [% SET selected = 1 %]
+                                    [% LAST %]
+                                [% END %]
+                            [% END %]
+                        <option value="[% val.branchcode %]"[% IF selected %] selected="selected"[% END %]>[% val.branchname %]</option>
+                        [% END %]
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <input type="checkbox" name="chk_last_visit" value="1" class="on-off"[% IF options.chk_last_visit == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="last_visit_period_length">Poslední návštěva před </label>
+                    <input type="number" name="last_visit_period_length" size="5" value="[% options.last_visit_period_length ? options.last_visit_period_length : '1' %]" step"1" min="0" />
+                    <select name="last_visit_period_type">
+                        <option value="year"[% IF options.last_visit_period_type == 'year' %] selected="selected"[% END %]>roky</option>
+                        <option value="month"[% IF options.last_visit_period_type == 'month' %] selected="selected"[% END %]>měsíci</option>
+                        <option value="day"[% IF options.last_visit_period_type == 'day' %] selected="selected"[% END %]>dny</option>
+                    </select>
+                    (nebo kratší dobou)
+                </div>
+
+                <div class="form-field">
+                    <input type="checkbox" name="chk_renew" value="1" class="on-off"[% IF options.chk_renew == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="renew_period_length">Registrace obnovena před </label>
+                    <input type="number" name="renew_period_length" size="5" value="[% options.renew_period_length ? options.renew_period_length : '1' %]" step"1" min="0" />
+                    <select name="renew_period_type">
+                        <option value="year"[% IF options.renew_period_type == 'year' %] selected="selected"[% END %]>roky</option>
+                        <option value="month"[% IF options.renew_period_type == 'month' %] selected="selected"[% END %]>měsíci</option>
+                        <option value="day"[% IF options.renew_period_type == 'day' %] selected="selected"[% END %]>dny</option>
+                    </select>
+                    (nebo kratší dobou)
+                </div>
+            </fieldset>
+
+        </div>
+
+        <div id="behavior">
+            <fieldset>
+            <legend>Výpůjčky</legend>
+                <div class="form-field">
+                    <strong>Použít</strong>
+                </div>
+
+                <div class="form-field">
+                    <input type="checkbox" name="chk_issues" value="1" class="on-off"[% IF options.chk_issues == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="issues">Uskutečněno </label>
+                    <select name="issues_op">
+                        <option value="<="[% IF options.issues_op == '<=' %] selected="selected"[% END %]>nejvýše</option>
+                        <option value=">="[% IF options.issues_op == '>=' %] selected="selected"[% END %]>alespoň</option>
+                    </select>
+                    <input type="number" name="issues" size="5" value="[% options.issues ? options.issues : '0' %]" step"1" min="0" /><span class="appended-label">výpůjček <span>za posledních</span></span>
+                        <input type="number" name="issues_period_length" size="2" value="[% options.issues_period_length ? options.issues_period_length : '1' %]" step"1" min="0" />
+                        <select name="issues_period_type" id="issues_period_type">
+                            <option value="year"[% IF options.issues_period_type == 'year' %] selected="selected"[% END %]>roků</option>
+                            <option value="month"[% IF options.issues_period_type == 'month' %] selected="selected"[% END %]>měsíců</option>
+                            <option value="this-year"[% IF options.issues_period_type == 'this-year' %] selected="selected"[% END %]>v tomto roce</option>
+                            <option value="last-reg"[% IF options.issues_period_type == 'last-reg' %] selected="selected"[% END %]>od počátku platnosti stávající registrace</option>
+                        </select>
+                </div>
+
+                <div class="form-field">
+                    <input type="checkbox" name="chk_bbox" value="1" class="on-off"[% IF options.chk_bbox == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="bbox">Využil </label>
+                    <select name="bbox_op">
+                        <option value="<="[% IF options.bbox_op == '<=' %] selected="selected"[% END %]>nejvýše</option>
+                        <option value=">="[% IF options.bbox_op == '>=' %] selected="selected"[% END %]>alespoň</option>
+                    </select>
+                    <input type="number" name="bbox" size="5" value="[% options.bbox ? options.bbox : '0' %]" step"1" min="0" /><span>-krát</span><span class="appended-label">bibliobox <span>za posledních</span></span>
+                        <input type="number" name="bbox_period_length" size="2" value="[% options.bbox_period_length ? options.bbox_period_length : '1' %]" step"1" min="0" />
+                        <select name="bbox_period_type" id="bbox_period_type">
+                            <option value="year"[% IF options.bbox_period_type == 'year' %] selected="selected"[% END %]>roků</option>
+                            <option value="month"[% IF options.bbox_period_type == 'month' %] selected="selected"[% END %]>měsíců</option>
+                            <option value="this-year"[% IF options.bbox_period_type == 'this-year' %] selected="selected"[% END %]>v tomto roce</option>
+                            <option value="last-reg"[% IF options.bbox_period_type == 'last-reg' %] selected="selected"[% END %]>od počátku platnosti stávající registrace</option>
+                        </select>
+                </div>
+
+                <div class="form-field">
+                    <input type="checkbox" name="chk_issue_length" value="1" class="on-off"[% IF options.chk_issue_length == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="issue_length">Délka každé výpůjčky </label>
+                    <select name="issue_length_type">
+                        <option value="avg"[% IF options.issue_length_type == 'avg' %] selected="selected"[% END %]>v průměru</option>
+                        <option value="min"[% IF options.issue_length_type == 'min' %] selected="selected"[% END %]>alespoň</option>
+                        <option value="max"[% IF options.issue_length_type == 'max' %] selected="selected"[% END %]>nejvýše</option>
+                    </select>
+                    <input type="number" name="issue_length" size="2" value="[% options.issue_length ? options.issue_length : '0' %]" step"1" min="0" /> dnů
+                    <span><span>za posledních</span></span>
+                    <input type="number" name="issue_length_period_length" size="2" value="[% options.issue_length_period_length ? options.issue_length_period_length : '1' %]" step"1" min="0" />
+                        <select name="issue_length_period_type" id="issue_length_period_type">
+                            <option value="year"[% IF options.issue_length_period_type == 'year' %] selected="selected"[% END %]>roků</option>
+                            <option value="month"[% IF options.issue_length_period_type == 'month' %] selected="selected"[% END %]>měsíců</option>
+                            <option value="this-year"[% IF options.issue_length_period_type == 'this-year' %] selected="selected"[% END %]>v tomto roce</option>
+                            <option value="last-reg"[% IF options.issue_length_period_type == 'last-reg' %] selected="selected"[% END %]>od počátku platnosti stávající registrace</option>
+                        </select>
+                </div>
+
+                <div class="form-field">
+                    <input type="checkbox" name="chk_prolongs" value="1" class="on-off"[% IF options.chk_prolongs == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="prolongs">Prodloužení výpůjčky </label>
+                    <select name="prolongs_op">
+                        <option value="<="[% IF options.prolongs_op == '<=' %] selected="selected"[% END %]>nejvýše</option>
+                        <option value=">="[% IF options.prolongs_op == '>=' %] selected="selected"[% END %]>alespoň</option>
+                    </select>
+                    <input type="number" name="prolongs" size="2" value="[% options.prolongs ? options.prolongs : '0' %]" step"1" min="0" /><span>-krát</span>
+                    <span><span>za posledních</span></span>
+                    <input type="number" name="prolongs_period_length" size="2" value="[% options.prolongs_period_length ? options.prolongs_period_length : '1' %]" step"1" min="0" />
+                        <select name="prolongs_period_type" id="prolongs_period_type">
+                            <option value="year"[% IF options.prolongs_period_type == 'year' %] selected="selected"[% END %]>roků</option>
+                            <option value="month"[% IF options.prolongs_period_type == 'month' %] selected="selected"[% END %]>měsíců</option>
+                            <option value="this-year"[% IF options.prolongs_period_type == 'this-year' %] selected="selected"[% END %]>v tomto roce</option>
+                            <option value="last-reg"[% IF options.prolongs_period_type == 'last-reg' %] selected="selected"[% END %]>od počátku platnosti stávající registrace</option>
+                        </select>
+                </div>
+
+            </fieldset>
+
+            <fieldset>
+            <legend>Rezervace</legend>
+                <div class="form-field">
+                    <input type="checkbox" name="chk_reserves" value="1" class="on-off"[% IF options.chk_reserves == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="reserves">Zadáno </label>
+                    <select name="reserves_op">
+                        <option value="<="[% IF options.reserves_op == '<=' %] selected="selected"[% END %]>nejvýše</option>
+                        <option value=">="[% IF options.reserves_op == '>=' %] selected="selected"[% END %]>alespoň</option>
+                    </select>
+                    <input type="number" name="reserves" size="5" value="[% options.reserves ? options.reserves : '0' %]" step"1" min="0" /><span class="appended-label">rezervací <span>za posledních</span></span>
+                        <input type="number" name="reserves_period_length" size="2" value="[% options.reserves_period_length ? options.reserves_period_length : '1' %]" step"1" min="0" />
+                        <select name="reserves_period_type" id="reserves_period_type">
+                            <option value="year"[% IF options.reserves_period_type == 'year' %] selected="selected"[% END %]>roků</option>
+                            <option value="month"[% IF options.reserves_period_type == 'month' %] selected="selected"[% END %]>měsíců</option>
+                            <option value="this-year"[% IF options.reserves_period_type == 'this-year' %] selected="selected"[% END %]>v tomto roce</option>
+                            <option value="last-reg"[% IF options.reserves_period_type == 'last-reg' %] selected="selected"[% END %]>od počátku platnosti stávající registrace</option>
+                        </select>
+                </div>
+
+            </fieldset>
+
+            <fieldset>
+            <legend>Platby</legend>
+                <div class="form-field">
+                    <input type="checkbox" name="chk_fines" value="1" class="on-off"[% IF options.chk_fines == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="fines">Čtenář pokutován </label>
+                    <select name="fines_op">
+                        <option value="<="[% IF options.fines_op == '<=' %] selected="selected"[% END %]>nejvýše</option>
+                        <option value=">="[% IF options.fines_op == '>=' %] selected="selected"[% END %]>alespoň</option>
+                    </select>
+                    <input type="number" name="fines" size="2" value="[% options.fines ? options.fines : '0' %]" step"1" min="0" /><span>-krát</span>
+                    <span class="appended-label"><span>za posledních</span></span>
+                    <input type="number" name="fines_period_length" size="2" value="[% options.fines_period_length ? options.fines_period_length : '1' %]" step"1" min="0" />
+                        <select name="fines_period_type" id="fines_period_type">
+                            <option value="year"[% IF options.fines_period_type == 'year' %] selected="selected"[% END %]>roků</option>
+                            <option value="month"[% IF options.fines_period_type == 'month' %] selected="selected"[% END %]>měsíců</option>
+                            <option value="this-year"[% IF options.fines_period_type == 'this-year' %] selected="selected"[% END %]>v tomto roce</option>
+                            <option value="last-reg"[% IF options.fines_period_type == 'last-reg' %] selected="selected"[% END %]>od počátku platnosti stávající registrace</option>
+                        </select>
+                </div>
+
+                <div class="form-field form-field-select">
+                    <input type="checkbox" name="chk_services" value="1" class="on-off"[% IF options.chk_services == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="services">Využil zpoplatněnou službu </label>
+                    <select name="services" multiple="multiple">
+                        [% FOREACH val IN invoice_types %]
+                            [% SET selected = 0 %]
+                            [% FOREACH opt IN options.services %]
+                                [% IF opt == val.type_code %]
+                                    [% SET selected = 1 %]
+                                    [% LAST %]
+                                [% END %]
+                            [% END %]
+                        <option value="[% val.type_code %]"[% IF selected %] selected="selected"[% END %]>[% val.description %]</option>
+                        [% END %]
+                    </select>
+                    <select name="services_op">
+                        <option value="<="[% IF options.services_op == '<=' %] selected="selected"[% END %]>nejvýše</option>
+                        <option value=">="[% IF options.services_op == '>=' %] selected="selected"[% END %]>alespoň</option>
+                    </select>
+                    <input type="number" name="services_count" size="2" value="[% options.services_count ? options.services_count : '0' %]" step"1" min="0" /><span>-krát</span>
+                    <span><span>za posledních</span></span>
+                    <input type="number" name="services_count_period_length" size="2" value="[% options.services_count_period_length ? options.services_count_period_length : '1' %]" step"1" min="0" />
+                        <select name="services_count_period_type" id="services_count_period_type">
+                            <option value="year"[% IF options.services_count_period_type == 'year' %] selected="selected"[% END %]>roků</option>
+                            <option value="month"[% IF options.services_count_period_type == 'month' %] selected="selected"[% END %]>měsíců</option>
+                            <option value="this-year"[% IF options.services_count_period_type == 'this-year' %] selected="selected"[% END %]>v tomto roce</option>
+                            <option value="last-reg"[% IF options.services_count_period_type == 'last-reg' %] selected="selected"[% END %]>od počátku platnosti stávající registrace</option>
+                        </select>
+                </div>
+            </fieldset>
+
+            <fieldset>
+            <legend>Zájmy čtenářů</legend>
+                <div class="form-field">
+                    <strong>Použít</strong>
+                </div>
+
+                [% IF itemtypes %]
+                <div class="form-field form-field-select">
+                    <input type="checkbox" name="chk_itemtypes" value="1" class="on-off"[% IF options.chk_itemtypes == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="itemtypes">Typy jednotek </label>
+                    <select name="itemtypes" multiple="multiple">
+                        [% FOREACH val IN itemtypes %]
+                            [% SET selected = 0 %]
+                            [% FOREACH opt IN options.itemtypes %]
+                                [% IF opt == val.itemtype %]
+                                    [% SET selected = 1 %]
+                                    [% LAST %]
+                                [% END %]
+                            [% END %]
+                        <option value="[% val.itemtype %]"[% IF selected %] selected="selected"[% END %]>[% val.description %]</option>
+                        [% END %]
+                    </select>
+                </div>
+                [% END %]
+
+
+                <div class="form-field">
+                    <input type="checkbox" name="chk_genre_form" value="1" class="on-off"[% IF options.chk_genre_form == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="genre_form">Žánr / forma díla </label>
+                    <input type="text" name="genre_form" id="genre_form" size="40" value="[% options.genre_form ? options.genre_form : '' %]" />
+                </div>
+
+                <div class="form-field">
+                    <input type="checkbox" name="chk_author" value="1" class="on-off"[% IF options.chk_author == '1' %] checked="checked"[% END %] />
+                    <label class="form-field-label" for="author">Autor </label>
+                    <input type="text" name="author" id="author" size="40" value="[% options.author ? options.author : '' %]" />
+                </div>
+            </fieldset>
+
+        </div>
+
+    </div>
+
+    </form>
+</div>
+
+[% INCLUDE 'intranet-bottom.inc' %]
