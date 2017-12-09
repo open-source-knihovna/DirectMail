@@ -41,12 +41,14 @@
                     <input type="hidden" name="class" value="[% CLASS %]"/>
                     <input type="hidden" name="method" value="[% METHOD %]"/>
 
+                    [% IF (borrowers) %]
                     <input type="hidden" name="phase" value="mail"/>
                     <input type="hidden" name="recipients" value="[% borrowers %]"/>
 
                     <button class="btn btn-default btn-sm" type="submit">
                         <i class="fa fa-envelope-o"></i> Rozeslat zprávu
                     </button>
+                    [% END %]
             </div>
     </div>
 

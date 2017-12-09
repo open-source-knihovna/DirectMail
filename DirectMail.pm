@@ -16,7 +16,7 @@ use Koha::Patrons;
 
 use Data::Dumper;
 
-our $VERSION = "1.0.1";
+our $VERSION = "1.0.2";
 
 our $extAttrIsOn = C4::Context->preference('ExtendedPatronAttributes') ne '0';
 
@@ -199,6 +199,7 @@ sub tool_list_predefs {
 
     $template->param(
         predefs => \@results,
+        extattr => $self->retrieve_data('extattr_agree')
     );
 
     print $template->output();
@@ -537,7 +538,7 @@ sub execute_sql {
                 push( @bindParams, $subcond->{sex} );
             }
             else {
-                push( @where, "borrowers.sex NOT IN ('M', 'F')" );
+                push( @where, "borrowers.sex NOT IN (\"M\", \"F\")" );
             }
         }
         if ( $enabled->{age} ) {
@@ -565,11 +566,14 @@ sub execute_sql {
         my $having = (scalar @havingParts > 0) ? "HAVING " . join(' AND ', @havingParts) : '';
         my $subconditions = join(' AND ', @where);
         my $attrAcceptMails = $self->retrieve_data('extattr_agree');
+        if ( $subconditions ) {
+            $subconditions = " AND $subconditions";
+        }
 
         $query = "SELECT $dbColumns "
             . " FROM borrowers "
             . " LEFT JOIN borrower_attributes ON borrower_attributes.borrowernumber = borrowers.borrowernumber AND code = \"$attrAcceptMails\""
-            . " WHERE TRIM(email) != \"\" AND email IS NOT NULL AND attribute = 1 AND $subconditions "
+            . " WHERE TRIM(email) != \"\" AND email IS NOT NULL AND attribute = 1 $subconditions "
             . "$having;";
         $sth = $dbh->prepare( $query );
         for my $i (0 .. $#bindParams) {

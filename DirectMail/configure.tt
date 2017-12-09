@@ -46,11 +46,12 @@
             <li>
                 <label class="form-field-label" for="extattr_agree">Vyjádření souhlasu čtenáře</label>
                 <select name="extattr_agree">
+                            <option value="?">(není uvedeno)</option>
                     [% FOREACH class IN available_attribute_types %]
                         [% FOREACH attr IN class.items %]
                             [% NEXT IF (attr.authorised_value_category != 'YES_NO') %]
                             [% selected = (attr.code == extattr_agree ? ' selected="selected"' : '') %]
-                            <option value="[% attr.code %]"[% selected %]>[% attr.description %] ([% attr.code %])</option>
+                            <option value="[% attr.code %]"[% selected %]>[% attr.code %] - [% attr.description %]</option>
                         [% END %]
                     [% END %]
                 </select>

@@ -39,52 +39,60 @@
     <input type="hidden" name="class" value="[% CLASS %]"/>
     <input type="hidden" name="method" value="[% METHOD %]"/>
 
-    [% IF (predefs) %]
-        <table id="table_reports">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Název</th>
-                    <th>Popis</th>
-                    <th class="title-string">Vytvořeno</th>
-                    <th class="title-string">Poslední úprava</th>
-                    <th>&nbsp;</th>
-                </tr>
-            </thead>
-            <tbody>
-            [% FOREACH predef IN predefs %]
-                <tr>
-                    <td>[% predef.predef_id %]</td>
-                    <td>[% predef.name %]</td>
-                    <td>[% predef.description %]</td>
-                    <td>[% predef.date_created | $KohaDates with_hours => 1  %]</td>
-                    <td>[% predef.last_modified | $KohaDates with_hours => 1  %]</td>
-                    <td>
-                        <div class="dropup">
-                            <div class="btn-group">
-                                [%# There should be no space between these two buttons, it would render badly %]
-                                <a class="btn btn-default btn-xs" role="button"
-                                    href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&amp;method=tool&amp;phase=run&amp;predef=[% predef.predef_id %]"><i
-                                    class="fa fa-play"></i> Spustit</a><a
-                                    class="btn btn-default btn-xs dropdown-toggle" id="reportactions[% predef.predef_id %]" role="button" data-toggle="dropdown"
-                                    href="#"><b class="caret"></b></a>
-                                <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="reportactions[% predef.predef_id %]">
-                                    <li><a href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&amp;method=tool&amp;phase=edit&amp;predef=[% predef.predef_id %]"><i class="fa fa-pencil"></i> Upravit</a></li>
-                                    <li><a href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&amp;method=tool&amp;phase=duplicate&amp;predef=[% predef.predef_id %]"><i class="fa fa-copy"></i> Duplikovat</a></li>
-                                    <li><a class="confirmdelete" title="Odstranit tuto předvolbu" href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&amp;method=tool&amp;phase=delete&amp;predef=[% predef.predef_id %]"><i class="fa fa-trash"></i> Odstranit</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </td>
-                <tr>
-            [% END %]
-            </tbody>
-        </table>
-    [% ELSE %]
-        <div class="dialog message">
-            <h4>Dosud neexistují žádné uložené předvolby</h4>
-            <a href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&method=tool&phase=edit">Vytvořit novou předvolbu</a>
+    [% IF (extattr == '') %]
+        <div class="dialog alert">
+            <h4>Modul není nakonfigurován</h4>
+            <p>Tento zásuvný modul vyžaduje, aby čtenáři mohli vyjadřovat informovaný souhlas s přímým oslovováním formou e-mailových zpráv.<br>V nastavení prosím zvolte ověřenou hodnotu, kterou k tomuto účelu používáte.</p>
+            <a href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&method=configure">Přejít do nastavení</a>
         </div>
+    [% ELSE %]
+        [% IF (predefs) %]
+            <table id="table_reports">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Název</th>
+                        <th>Popis</th>
+                        <th class="title-string">Vytvořeno</th>
+                        <th class="title-string">Poslední úprava</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                [% FOREACH predef IN predefs %]
+                    <tr>
+                        <td>[% predef.predef_id %]</td>
+                        <td>[% predef.name %]</td>
+                        <td>[% predef.description %]</td>
+                        <td>[% predef.date_created | $KohaDates with_hours => 1  %]</td>
+                        <td>[% predef.last_modified | $KohaDates with_hours => 1  %]</td>
+                        <td>
+                            <div class="dropup">
+                                <div class="btn-group">
+                                    [%# There should be no space between these two buttons, it would render badly %]
+                                    <a class="btn btn-default btn-xs" role="button"
+                                        href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&amp;method=tool&amp;phase=run&amp;predef=[% predef.predef_id %]"><i
+                                        class="fa fa-play"></i> Spustit</a><a
+                                        class="btn btn-default btn-xs dropdown-toggle" id="reportactions[% predef.predef_id %]" role="button" data-toggle="dropdown"
+                                        href="#"><b class="caret"></b></a>
+                                    <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="reportactions[% predef.predef_id %]">
+                                        <li><a href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&amp;method=tool&amp;phase=edit&amp;predef=[% predef.predef_id %]"><i class="fa fa-pencil"></i> Upravit</a></li>
+                                        <li><a href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&amp;method=tool&amp;phase=duplicate&amp;predef=[% predef.predef_id %]"><i class="fa fa-copy"></i> Duplikovat</a></li>
+                                        <li><a class="confirmdelete" title="Odstranit tuto předvolbu" href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&amp;method=tool&amp;phase=delete&amp;predef=[% predef.predef_id %]"><i class="fa fa-trash"></i> Odstranit</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    <tr>
+                [% END %]
+                </tbody>
+            </table>
+        [% ELSE %]
+            <div class="dialog message">
+                <h4>Dosud neexistují žádné uložené předvolby</h4>
+                <a href="/cgi-bin/koha/plugins/run.pl?class=Koha::Plugin::Com::RBitTechnology::DirectMail&method=tool&phase=edit">Vytvořit novou předvolbu</a>
+            </div>
+        [% END %]
     [% END %]
     </form>
 </div>
