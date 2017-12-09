@@ -16,7 +16,7 @@ use Koha::Patrons;
 
 use Data::Dumper;
 
-our $VERSION = "1.0.0";
+our $VERSION = "1.0.1";
 
 our $extAttrIsOn = C4::Context->preference('ExtendedPatronAttributes') ne '0';
 
@@ -26,7 +26,7 @@ our $metadata = {
     description     => 'Využitím tohoto nástroje lze vytvářet cílové skupiny čtenářů podle zadaných kritérií a těmto skupinám rozesílat hromadně zprávy formou e-mailu. '
                          . ($extAttrIsOn ? '' : 'Modul nebude fungovat, není nastaven parametr <a href="/cgi-bin/koha/admin/preferences.pl?op=search&amp;searchfield=ExtendedPatronAttributes"><strong>ExtendedPatronAttributes</strong></a>.'),
     date_authored   => '2017-11-23',
-    date_updated    => '2017-11-23',
+    date_updated    => '2017-12-09',
     minimum_version => '16.11',
     maximum_version => undef,
     version         => $VERSION
@@ -569,7 +569,7 @@ sub execute_sql {
         $query = "SELECT $dbColumns "
             . " FROM borrowers "
             . " LEFT JOIN borrower_attributes ON borrower_attributes.borrowernumber = borrowers.borrowernumber AND code = \"$attrAcceptMails\""
-            . " WHERE TRIM(email) != '' AND email IS NOT NULL AND attribute = 1 $subconditions "
+            . " WHERE TRIM(email) != \"\" AND email IS NOT NULL AND attribute = 1 AND $subconditions "
             . "$having;";
         $sth = $dbh->prepare( $query );
         for my $i (0 .. $#bindParams) {
