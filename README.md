@@ -35,8 +35,8 @@ Alias /plugin/ "/var/lib/koha/kohadev/plugins/"
 
 Jakmile je nastavení připraveno, budete potřebovat změnit systémovou konfigurační hodnotu UseKohaPlugins v administraci Kohy. Na stránce Nástroje pak najdete odkaz Zásuvné moduly. Aktuální verzi pluginu [stahujte v sekci Releases](https://github.com/open-source-knihovna/DirectMail/releases).
 
-## Nastavení specifické pro modul inteligentních odpisů
+## Nastavení specifické pro modul
 
-Před prvním spuštěním nástroje nejprve zvolte položku "Nastavit" v menu "Akce". Konfigurační stránka umožní vybrat vhodný parameter ze seznamu Dalších vlastností čtenářů, který knihovna využívá k evidenci informovaného souhlasu čtenářů s přímým oslovováním prostřednictvím e-mailu.
+
 
 Více informací, jak s nástrojem pracovat naleznete na [wiki](https://github.com/open-source-knihovna/DirectMail/wiki/Úvod)
