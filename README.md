@@ -6,7 +6,7 @@ Plugin vytvořila společnost R-Bit Technology, s. r. o. ve spolupráci s česko
 
 # Úvod
 
-Zásuvný modul 'Přímé oslovování čtenářů' byl vytvořen jako nástroj pro hromadné rozesílání zpráv vybraným skupinám čtenřů. Využitím tohoto nástroje si knihovny mohou vyhledávat nejvhodnější adresáty podle souboru stanovených parametrů. Výběr není subjektivní či pocitový, ale je založen na reálných datech o čtenářích a jejich způsobu využívání knihovních služeb.
+Zásuvný modul 'Přímé oslovování čtenářů' byl vytvořen jako nástroj pro hromadné rozesílání zpráv vybraným skupinám čtenářů. Využitím tohoto nástroje si knihovny mohou vyhledávat nejvhodnější adresáty podle souboru stanovených parametrů. Výběr není subjektivní či pocitový, ale je založen na reálných datech o čtenářích a jejich způsobu využívání knihovních služeb.
 
 Pro skutečně snadnou práci lze nastavení vyhledávacích parametrů uložit, pojmenovat a celou předvolbu případně doplnit i delším slovním popisem. Uložené předvolby se dají snadno duplikovat a vytvářet tak velmi rychle různé varianty nastavení. Z důvodu vyšší ochrany osobních údajů nejsou údaje o konkrétních čtenářích nikde zobrazeny. Výsledek je vždy zobrazen pouze jako celkový počet nalezených adresátů s možností odeslat jim zvolenou zprávu.
 
