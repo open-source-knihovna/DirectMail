@@ -39,4 +39,4 @@ Jakmile je nastavení připraveno, budete potřebovat změnit systémovou konfig
 
 
 
-Více informací, jak s nástrojem pracovat naleznete na [wiki](https://github.com/open-source-knihovna/DirectMail/wiki/Úvod)
+Více informací, jak s nástrojem pracovat naleznete na [wiki](https://github.com/open-source-knihovna/DirectMail/wiki)
